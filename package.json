@@ -1,0 +1,22 @@
+{
+    "name": "dj-ricky",
+    "version": "1.0.0",
+    "description": "Bota o som DJ",
+    "main": "bot.js",
+    "author": "SoRN#8444",
+    "type": "commonjs",
+    "dependencies": {
+        "@discordjs/opus": "^0.7.0",
+        "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+        "discord.js": "^12.5.3",
+        "ffmpeg": "0.0.4",
+        "ffmpeg-static": "^5.0.0",
+        "fluent-ffmpeg": "^2.1.2",
+        "node-opus": "^0.3.3",
+        "spotify-api.js": "^9.2.0",
+        "winston": "^3.7.2",
+        "yt-search": "^2.10.3",
+        "ytdl-core": "^4.11.0",
+        "ytpl": "^2.3.0"
+    }
+}
