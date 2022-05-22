@@ -43,7 +43,7 @@ async function addSongToQueue(serverQueue, song, message, voiceChannel, randomMs
             } else if (rnd == 2) {
                 return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
             } else if (rnd == 3) {
-                return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
+                return message.channel.send(`Fodasse que merda, **${song.title}** adicionada a lista!`);
             } else if (rnd == 4) {
                 return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
             } else if (rnd == 5) {
