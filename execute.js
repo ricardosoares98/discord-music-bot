@@ -2,7 +2,6 @@ const operations = require("./operations.js");
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
 const ytpl = require("ytpl");
-const sfpl = require("spotify-api.js")
 
 const maxLinesPlaylist = 10;
 

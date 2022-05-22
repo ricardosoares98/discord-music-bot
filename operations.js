@@ -41,7 +41,7 @@ module.exports = {
             }
             return message.channel.send(".Ta feito, baralhada merda está, sempre volta, Ok");
         } else {
-            return message.channel.send("Ñão há nada para baralhar, deves ser meio burro.");
+            return message.channel.send("Não há nada para baralhar, deves ser meio burro.");
         }
     },
     play: function play (guild, song) {
