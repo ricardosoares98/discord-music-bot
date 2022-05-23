@@ -1,8 +1,52 @@
 const ytdl = require("ytdl-core");
 
 module.exports = {
-    name: "Available operations",
-    description: "All available operations for the music bot",
+    addSongToQueue: async function (serverQueue, song, message, voiceChannel, sendMessage){
+        if (!serverQueue) {
+            const queueContruct = {
+                textChannel: message.channel,
+                voiceChannel: voiceChannel,
+                connection: null,
+                songs: [],
+                volume: 5,
+                playing: true
+            };
+    
+            global.queue.set(message.guild.id, queueContruct);
+            queueContruct.songs.push(song);
+    
+            try {
+                var connection = await voiceChannel.join();
+                queueContruct.connection = connection;
+                this.play(message.guild, queueContruct.songs[0]);
+                serverQueue = global.queue.get(message.guild.id)
+            } catch (err) {
+                console.log(err);
+                global.queue.delete(message.guild.id);
+                return message.channel.send(err);
+            }
+        } else {
+            serverQueue.songs.push(song);
+    
+            if (sendMessage) {
+                var rnd = Math.floor(Math.random() * 5);
+     
+                if (rnd == 0) {
+                    return message.channel.send(`Ora bem mais uma musica de merda que ninguem quer ouvir mas pronto. **${song.title}** foi adicionada!`);
+                } else if (rnd == 1) {
+                    return message.channel.send(`Está vai baaaaaater, no fundo. **${song.title}** foi adicionada, com muito carinho!`);
+                } else if (rnd == 2) {
+                    return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
+                } else if (rnd == 3) {
+                    return message.channel.send(`Fodasse que merda, **${song.title}** adicionada a lista!`);
+                } else if (rnd == 4) {
+                    return message.channel.send(`:fire: :fire: :fire:. Aqui vai **${song.title}** para a lista!`);
+                } else if (rnd == 5) {
+                    return message.channel.send(`Está bem, está bem. **${song.title}** para a lista!`);
+                } 
+            }
+        }
+    },
     skip: function (message, serverQueue) {
         if (!message.member.voice.channel)
             return message.channel.send(
@@ -44,7 +88,7 @@ module.exports = {
             return message.channel.send("Não há nada para baralhar, deves ser meio burro.");
         }
     },
-    play: function play (guild, song) {
+    play: function play (guild, song, noMsg) {
         const serverQueue = queue.get(guild.id);
         if (!song) {
             serverQueue.voiceChannel.leave();
@@ -60,25 +104,51 @@ module.exports = {
             })
             .on("error", error => console.error(error));
         dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+        
+        if(!noMsg){
+            var rnd = Math.floor(Math.random() * 5);
 
-        var rnd = Math.floor(Math.random() * 5);
-
-        if (rnd == 0) {
-            serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
-        } else if (rnd == 1) {
-            serverQueue.textChannel.send(`Esta é boa, a tocar: **${song.title}** \n **${song.url}**`);
-        } else if (rnd == 2) {
-            serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
-        } else if (rnd == 3) {
-            serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
-        } else if (rnd == 4) {
-            serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
-        } else if (rnd == 5) {
-            serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
+            if (rnd == 0) {
+                serverQueue.textChannel.send(`Proximo soooom, bota fogo nessa merda: **${song.title}** \n **${song.url}**`);
+            } else if (rnd == 1) {
+                serverQueue.textChannel.send(`Esta é boa, a tocar: **${song.title}** \n **${song.url}**`);
+            } else if (rnd == 2) {
+                serverQueue.textChannel.send(`Aqui vai: **${song.title}** \n **${song.url}**`);
+            } else if (rnd == 3) {
+                serverQueue.textChannel.send(`A pedido do gajo mais chato desta sala: **${song.title}** \n **${song.url}**`);
+            } else if (rnd == 4) {
+                serverQueue.textChannel.send(`Esta é para por tuda a gente a chorar: **${song.title}** \n **${song.url}**`);
+            } else if (rnd == 5) {
+                serverQueue.textChannel.send(`Mas que música de merda, aqui vai: **${song.title}** \n **${song.url}**`);
+            }
         }
     },
-    meme: function (){
-        //Play a meme song
+    meme: async function (message, serverQueue){
+        //Play random meme
+        const voiceChannel = message.member.voice.channel;
+
+        var rnd = Math.floor(Math.random() * 10);
+        let song;
+        if(rnd = 0){
+            //Seu passaro maluco (for some reason starts and stops in 1 sec)
+            const songInfo = await ytdl.getInfo("https://www.youtube.com/watch?v=DpQyy2PKeSs")
+            song = {
+                title: songInfo.videoDetails.title,
+                url: songInfo.videoDetails.video_url
+            };          
+        }else{
+            //default random meme
+            //Eu quero cafeeeeeeeeeee
+            const songInfo = await ytdl.getInfo("https://www.youtube.com/watch?v=VxRpkfcXEpA")
+            song = {
+                title: songInfo.videoDetails.title,
+                url: songInfo.videoDetails.video_url
+            };          
+        }
+
+        message.channel.send(":see_no_evil: :hear_no_evil: :speak_no_evil:");
+
+        this.addSongToQueue(serverQueue,song, message, voiceChannel, false);
     },
     
 }

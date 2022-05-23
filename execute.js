@@ -5,55 +5,6 @@ const ytpl = require("ytpl");
 
 const maxLinesPlaylist = 10;
 
-async function addSongToQueue(serverQueue, song, message, voiceChannel, randomMsg){
-    if (!serverQueue) {
-        const queueContruct = {
-            textChannel: message.channel,
-            voiceChannel: voiceChannel,
-            connection: null,
-            songs: [],
-            volume: 5,
-            playing: true
-        };
-
-        global.queue.set(message.guild.id, queueContruct);
-        queueContruct.songs.push(song);
-
-        try {
-            var connection = await voiceChannel.join();
-            queueContruct.connection = connection;
-            operations.play(message.guild, queueContruct.songs[0]);
-            serverQueue = global.queue.get(message.guild.id)
-        } catch (err) {
-            console.log(err);
-            global.queue.delete(message.guild.id);
-            return message.channel.send(err);
-        }
-    } else {
-        serverQueue.songs.push(song);
-
-        if (randomMsg) {
-            var rnd = Math.floor(Math.random() * 6);
-
-            if (rnd == 0) {
-                return message.channel.send(`Ora bem mais uma musica de merda que ninguem quer ouvir mas pronto. **${song.title}** foi adicionada!`);
-            } else if (rnd == 1) {
-                return message.channel.send(`Está vai baaaaaater, no fundo. **${song.title}** foi adicionada, com muito carinho!`);
-            } else if (rnd == 2) {
-                return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
-            } else if (rnd == 3) {
-                return message.channel.send(`Fodasse que merda, **${song.title}** adicionada a lista!`);
-            } else if (rnd == 4) {
-                return message.channel.send(`:fire: :fire: :fire:. Aqui vai **${song.title}** para a lista!`);
-            } else if (rnd == 5) {
-                return message.channel.send(`Está bem, está bem. **${song.title}** para a lista!`);
-            } else if (rnd == 6) {
-                return message.channel.send(`Está é a minha favorita. Aqui vai **${song.title}** para a lista!`);
-            }
-        }
-    }
-}
-
 module.exports = {
     play: async function execute(message, serverQueue) {
         const args = message.content.split(" ");
@@ -80,7 +31,7 @@ module.exports = {
                 url: songInfo.videoDetails.video_url
             };
             
-            addSongToQueue(serverQueue, song, message, voiceChannel, true);
+            operations.addSongToQueue(serverQueue, song, message, voiceChannel, true);
         //Validate ID YT Playlist
         } else if(ytpl.validateID(args[2])) {
             const playlist = await ytpl(args[2]);
@@ -109,7 +60,7 @@ module.exports = {
                     songTitles = songTitles + " e **" + (playlist.items.length - maxLinesPlaylist) + "** outras.";
                 }
 
-                addSongToQueue(global.queue.get(message.guild.id), song, message, voiceChannel, false);
+                operations.addSongToQueue(global.queue.get(message.guild.id), song, message, voiceChannel, false);
             }
             
             global.commandInProcess = false;
@@ -130,7 +81,7 @@ module.exports = {
                 url: videos[0].url
             };
 
-            addSongToQueue(serverQueue, song, message, voiceChannel, true);
+            operations.addSongToQueue(serverQueue, song, message, voiceChannel, true);
         }
     }
 }
