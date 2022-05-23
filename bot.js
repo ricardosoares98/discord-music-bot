@@ -34,6 +34,9 @@ client.on("ready", () =>{
 });
 
 client.on("message", async message => {
+  const devID = '282642563414884355';
+
+  if (message.content.includes("DJ RICKY SPAM") && (message.author.id == devID || message.author.bot)) { operations.spam(message, false); return };
   if (message.author.bot) return;
   if (!message.content.startsWith(prefix)) return;
 
@@ -86,6 +89,11 @@ client.on("message", async message => {
         " `ricky shuffle ou ricky baralha` para baralhares a musica toda. \n \n" +
         " `ricky meme`só a uma maneira de saberes o que faz :robot:"
       );
+      break;
+    case `${prefix}spam`:
+      if(!(message.author.id == devID)) { message.channel.send("Nope não conheço, não sei do que falas, isso é de comer? "); break; }
+      message.channel.send("Nem sei como começar... será que te digo como parar? Ou será tarde demais... É só escreveres ricky ...");
+      setTimeout(() => { operations.spam(message, true) }, 2000)
       break;
     default:
       message.channel.send("Ah uhm ah e tal concordo contigo mas não percebo nada. Se es burro e não sabes falar comigo eu tenho um dicionário ricky ajuda ou ricky help se fores ingrês");

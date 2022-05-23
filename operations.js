@@ -150,5 +150,20 @@ module.exports = {
 
         this.addSongToQueue(serverQueue,song, message, voiceChannel, false);
     },
+    spam: function (message, isFirst){
+        var spamMsg;
+
+        if (isFirst) {
+            spamMsg = " :robot: DJ RICKY SPAM ";
+        }else{
+            spamMsg = message.content.concat(" :robot: DJ RICKY SPAM ");
+        }
+              
+        if(spamMsg.length > 500){
+            message.channel.send("** \n \n Bem, vou parar, ja descarreguei a minha raiva por hoje** :face_with_symbols_over_mouth:");
+        }else{
+            message.channel.send(spamMsg);
+        }   
+    }
     
 }
