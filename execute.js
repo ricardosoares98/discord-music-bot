@@ -25,13 +25,22 @@ module.exports = {
         //Validate URL YT Video
         if (ytdl.validateURL(args[2])) {
             //Search song by URL
-            const songInfo = await ytdl.getInfo(args[2]);
-            song = {
-                title: songInfo.videoDetails.title,
-                url: songInfo.videoDetails.video_url
-            };
-            
-            operations.addSongToQueue(serverQueue, song, message, voiceChannel, true);
+
+            try {
+                const songInfo = await ytdl.getInfo(args[2]);
+
+                song = {
+                    title: songInfo.videoDetails.title,
+                    url: songInfo.videoDetails.video_url
+                };
+                
+                operations.addSongToQueue(serverQueue, song, message, voiceChannel, true);
+            }
+            catch (ex){
+                return message.channel.send(
+                    "Lamento informar mas o maninho do Youtube não me deixa tocar essa merda."
+                );
+            }           
         //Validate ID YT Playlist
         } else if(ytpl.validateID(args[2])) {
             const playlist = await ytpl(args[2]);
@@ -47,20 +56,27 @@ module.exports = {
             let songTitles = "";           
             for (let i = 0; i < playlist.items.length; i++) {
                 const element = playlist.items[i];
+ 
 
-                const songInfo = await ytdl.getInfo(element.url);
-                song = {
-                    title: songInfo.videoDetails.title,
-                    url: songInfo.videoDetails.video_url
-                };
+                try {
+                    const songInfo = await ytdl.getInfo(element.url);
 
-                if (i <= maxLinesPlaylist) {
-                    songTitles = songTitles + " **" + song.title + "** \n";
-                } else if (i == maxLinesPlaylist + 1) { //If more then X just count and add one line at the end
-                    songTitles = songTitles + " e **" + (playlist.items.length - maxLinesPlaylist) + "** outras.";
+                    song = {
+                        title: songInfo.videoDetails.title,
+                        url: songInfo.videoDetails.video_url
+                    };
+    
+                    if (i <= maxLinesPlaylist) {
+                        songTitles = songTitles + " **" + song.title + "** \n";
+                    } else if (i == maxLinesPlaylist + 1) { //If more then X just count and add one line at the end
+                        songTitles = songTitles + " e **" + (playlist.items.length - maxLinesPlaylist) + "** outras.";
+                    }
+    
+                    operations.addSongToQueue(global.queue.get(message.guild.id), song, message, voiceChannel, false);
                 }
-
-                operations.addSongToQueue(global.queue.get(message.guild.id), song, message, voiceChannel, false);
+                catch (ex){
+                    continue;
+                }                             
             }
             
             global.commandInProcess = false;
