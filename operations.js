@@ -132,11 +132,7 @@ module.exports = {
 
             const dispatcher = serverQueue.connection
                 .play(ytdl(song.url, {
-                    quality: 'highestaudio',
-                    filter: (form) => {
-                      if (form.bitrate && channel?.bitrate) return form.bitrate <= channel.bitrate;
-                      return false;
-                    },
+                    bitrate: channel.bitrate                    
                   }))
                 .on("finish", () => {
                     serverQueue.songs.shift();
