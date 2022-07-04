@@ -23,6 +23,8 @@ client.once("disconnect", () => {
   console.log("Disconnect!");
 });
 
+client.on("error", err => { throw err; });
+
 client.on("ready", () =>{
   client.user.setPresence({
     status: 'online',

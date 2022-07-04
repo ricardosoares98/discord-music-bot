@@ -95,8 +95,7 @@ module.exports = {
             if (!videos.length) return message.channel.send("Fodasse, não procuro mais essa merda não existe.");
             song = {
                 title: videos[0].title,
-                url: videos[0].url,
-                stream: null
+                url: videos[0].url
             };
 
             try {

@@ -132,7 +132,8 @@ module.exports = {
 
             const dispatcher = serverQueue.connection
                 .play(ytdl(song.url, {
-                    bitrate: channel.bitrate                    
+                    bitrate: channel.bitrate,
+                    highWaterMark: 1 << 25               
                   }))
                 .on("finish", () => {
                     serverQueue.songs.shift();
