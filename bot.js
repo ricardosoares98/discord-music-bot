@@ -87,7 +87,7 @@ client.on("message", async message => {
         " `ricky skip ou ricky next ou ricky proxima` para passares aquela musica de merda que o teu amigo decidiu por. \n \n" +
         " `ricky stop ou ricky para ou ricky morre` para eu me calar... para sempre :sob: ou pelo menos até me voltares a usar. \n \n" +
         " `ricky shuffle ou ricky baralha` para baralhares a musica toda. \n \n" +
-        " `ricky meme`só a uma maneira de saberes o que faz :robot:"
+        " `ricky meme` só a uma maneira de saberes o que faz :robot:"
       );
       break;
     case `${prefix}spam`:
