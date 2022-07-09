@@ -77,7 +77,16 @@ client.on("message", async message => {
       break;
     //play a meme song
     case `${prefix}meme`:
-      operations.meme(message,serverQueue);
+      operations.meme(message, serverQueue);
+      break;
+    //spotify support
+    case `${prefix}spotify`:
+      exe.spotify(message, serverQueue);
+      break;
+    //spotify support
+    case `${prefix}quantas`:
+    case `${prefix}count`:
+      operations.count(message, serverQueue);
       break;
     //bot commands message
     case `${prefix}help`:
@@ -89,6 +98,9 @@ client.on("message", async message => {
         " `ricky skip ou ricky next ou ricky proxima` para passares aquela musica de merda que o teu amigo decidiu por. \n \n" +
         " `ricky stop ou ricky para ou ricky morre` para eu me calar... para sempre :sob: ou pelo menos até me voltares a usar. \n \n" +
         " `ricky shuffle ou ricky baralha` para baralhares a musica toda. \n \n" +
+        " `ricky spotify` para ouvires as tuas músicas do spotifodasse, so funfa com o link da playlist. \n \n" +
+        " `ricky spotify Top 50 ou Top 50 Portugal` para ouvires os Tops do spotifodasse. \n \n" +
+        " `ricky quantas ou ricky count` numero de músicas em espera, vamos la ver se ainda sei contar. \n \n" +
         " `ricky meme` só a uma maneira de saberes o que faz :robot:"
       );
       break;

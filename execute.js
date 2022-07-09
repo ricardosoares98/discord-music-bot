@@ -2,6 +2,8 @@ const operations = require("./operations.js");
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
 const ytpl = require("ytpl");
+const SpotifyWebApi = require("spotify-web-api-node");
+const { clientId, clientSecret } = require("./auth.json");
 
 const maxLinesPlaylist = 10;
 
@@ -10,16 +12,8 @@ module.exports = {
         const args = message.content.split(" ");
 
         const voiceChannel = message.member.voice.channel;
-        if (!voiceChannel)
-            return message.channel.send(
-                "Oh Morcão, para onde vamos curtir está musica? Entra num canal pah!"
-            );
-        const permissions = voiceChannel.permissionsFor(message.client.user);
-        if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-            return message.channel.send(
-                "Não consigo tocar musica fodasse, inutéis. Quero permissões **JÁ**"
-            );
-        }
+        let isValid = validateVoice(message, voiceChannel);
+        if(isValid != "") {return;}
 
         let song;
         //Validate URL YT Video
@@ -88,25 +82,113 @@ module.exports = {
                 "Músicas adicionadas: \n" +
                 songTitles
             );
-        } else {
-            //Search song by Title
-            const { videos } = await yts(args.slice(2).join(" "));
-
-            if (!videos.length) return message.channel.send("Fodasse, não procuro mais essa merda não existe.");
-            song = {
-                title: videos[0].title,
-                url: videos[0].url
-            };
-
-            try {
-                const songInfo = await ytdl.getInfo(song.url);
-
-                operations.addSongToQueue(serverQueue, song, message, voiceChannel, true);              
-            } catch (error) {
-                return message.channel.send(
-                    "Lamento informar mas o maninho do Youtube não me deixa tocar essa merda."
-                );
-            }      
+        } else {          
+            ytTitle(message, voiceChannel, args.slice(2).join(" "), true);   
         }
+    },
+    spotify: async function (message, serverQueue){
+        const voiceChannel = message.member.voice.channel;
+        let isValid = validateVoice(message, voiceChannel);
+        if(isValid != "") {return;}
+
+        const args = message.content.split(" ");
+
+        var playlistID = "";
+
+        if (args.length == 4 && args[2].toUpperCase() == "TOP" && args[3].toUpperCase() == "50") {
+            playlistID = "37i9dQZEVXbMDoHDwVN2tF";
+        }
+        else if(args.length == 5 && args[2].toUpperCase() == "TOP" && args[3].toUpperCase() == "50" && args[4].toUpperCase() == "PORTUGAL"){
+            playlistID = "37i9dQZEVXbKyJS56d1pgi";
+        }
+        else {
+            playlistID = args[2].substring(
+                args[2].lastIndexOf("/") + 1, 
+                args[2].lastIndexOf("?")
+            );
+        }
+
+        if(playlistID == ""){return;}
+
+        var spotifyApi = new SpotifyWebApi({
+            clientId: `${clientId}`,
+            clientSecret: `${clientSecret}`,
+            redirectUri: 'http://localhost:8080'
+          });
+
+        message.channel.send(
+            "A adicionar música, espera um pouco que esta merda não é fácil de fazer fodasse \n" +
+            "Vou-me tossir um pouco no inicio, mas esta merda não é Covid podes ter calma"
+        );
+
+        spotifyApi.clientCredentialsGrant().then(async function(dataClient){
+            spotifyApi.setAccessToken(dataClient.body.access_token);
+
+            spotifyApi.getPlaylist(playlistID)
+                .then(async function(data) {
+                    data.body.tracks.items.forEach(el => {
+
+                        let trackId = el.track.id; 
+                        global.commandInProcess = true;
+
+                        spotifyApi.getTrack(trackId).then(async function(trackData){
+                            var ytSearch = "";
+                            trackData.body.artists.forEach(artist => {
+                                ytSearch = ytSearch.concat(" ", artist.name);
+                            });    
+
+                            ytSearch = ytSearch.concat(" ", trackData.body.name); 
+                                
+                            const result = await ytTitle(message, voiceChannel, ytSearch, false);  
+                            global.commandInProcess = false;                            
+                        }) 
+                    });
+                },function(err) {
+                    console.log('Something went wrong!', err);
+                    global.commandInProcess = false;
+                });
+        });
+    },
+}
+
+async function ytTitle (message, voiceChannel, ytSearch, sendMessage){
+    let song;
+    //Search song by Title
+    const { videos } = await yts(ytSearch);
+
+    if (!videos.length) return message.channel.send("Fodasse, não procuro mais essa merda não existe.");
+    song = {
+        title: videos[0].title,
+        url: videos[0].url
+    };
+
+    try {
+        //used to test if bot can play song
+        const songInfo = await ytdl.getInfo(song.url);
+
+        operations.addSongToQueue(global.queue.get(message.guild.id), song, message, voiceChannel, sendMessage);              
+    } catch (error) {
+        if(sendMessage){
+            return message.channel.send(
+                "Lamento informar mas o maninho do Youtube não me deixa tocar essa merda."
+            );
+        }else{
+            console.log("ytTitle error: ".concat(error));
+        }    
+    }  
+}
+
+function validateVoice(message, voiceChannel){
+    if (!voiceChannel)
+        return message.channel.send(
+            "Oh Morcão, para onde vamos curtir está musica? Entra num canal pah!"
+        );
+    const permissions = voiceChannel.permissionsFor(message.client.user);
+    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+        return message.channel.send(
+            "Não consigo tocar musica fodasse, inutéis. Quero permissões **JÁ**"
+        );
     }
+
+    return "";
 }

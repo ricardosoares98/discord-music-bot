@@ -1,4 +1,5 @@
 const ytdl = require("ytdl-core");
+
 let musicIsPlaying = true;
 
 module.exports = {
@@ -215,6 +216,13 @@ module.exports = {
             console.log("Error in play")
             console.log(error);
         }
-    }
+    },
+    count: function (message, serverQueue){
+        if (!serverQueue || !serverQueue.songs) {
+            return message.channel.send(`Nada, nadinha, zero sabes isto aqui 0 ZEEEEEEEEEEEEEEEEEERO FODASSE!`);
+        }
+        var count = serverQueue.songs.length();
 
+        return message.channel.send(`Prai ou mais de **${count}** na lista!`);
+    }
 }
